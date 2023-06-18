@@ -16,12 +16,6 @@ export function Modal({largeImg, closeModal}) {
   }
 
 
-  const handleModalEsc = (event) => {
-    if(event.code === "Escape") {
-      console.log("Escape");
-      closeModal();
-    } 
-  }
 
 
   const isFirstRender = useRef(true);
@@ -31,36 +25,20 @@ export function Modal({largeImg, closeModal}) {
       isFirstRender.current = false;
       return
     }
-   
-    window.addEventListener('keydown', handleModalEsc);
+    const handleModalEsc = (event) => {
+      if(event.code === "Escape") {
+        console.log("Escape");
+        closeModal();
+      } 
+    }
+    document.addEventListener('keydown', handleModalEsc);
     console.log('add keydown');
 
     return ()=> {
-      window.removeEventListener('keydown', handleModalEsc);
+      document.removeEventListener('keydown', handleModalEsc);
       console.log('remove keydown');
     }
-  }, []);
-
-
-  // useEffect(()=> {
-  //   if(isFirstRender.current) {
-  //     isFirstRender.current = false;
-  //     return
-  //   }
-  //   const handleModalEsc = (event) => {
-  //     if(event.code === "Escape") {
-  //       console.log("Escape");
-  //       closeModal();
-  //     } 
-  //   }
-  //   window.addEventListener('keydown', handleModalEsc);
-  //   console.log('add keydown');
-
-  //   return ()=> {
-  //     window.removeEventListener('keydown', handleModalEsc);
-  //     console.log('remove keydown');
-  //   }
-  // }, [closeModal]);
+  }, [closeModal]);
 
 
 
