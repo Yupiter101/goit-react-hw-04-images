@@ -1,4 +1,5 @@
-import {useEffect, useRef} from "react";
+import {useEffect} from "react";
+// import {useEffect, useRef} from "react";
 import css from './Modal.module.css';
 import PropTypes from 'prop-types';
 import { createPortal } from "react-dom";
@@ -18,13 +19,13 @@ export function Modal({largeImg, closeModal}) {
 
 
 
-  const isFirstRender = useRef(true);
+  // const isFirstRender = useRef(true);
 
   useEffect(()=> {
-    if(isFirstRender.current) {
-      isFirstRender.current = false;
-      return
-    }
+    // if(isFirstRender.current) {
+    //   isFirstRender.current = false;
+    //   return
+    // }
     const handleModalEsc = (event) => {
       if(event.code === "Escape") {
         console.log("Escape");
