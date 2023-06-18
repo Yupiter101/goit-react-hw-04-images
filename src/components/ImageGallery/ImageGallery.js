@@ -8,34 +8,22 @@ import { Modal } from 'components/Modal/Modal';
 
 
 
-export class ImageGallery extends React.Component {
+export function ImageGallery({ items }) {
 
-  state = {
-    showModal: false,
-    largeImage: '',
-  }
+  const [showModal, setShowModal] = React.useState(false);
+  const [largeImage, setLargeImage] = React.useState('');
 
 
-  openModal = (largeImage) => {
-    this.setState({showModal: true, largeImage});
+  const openModal = (largeImage) => {
+    setShowModal(true);
+    setLargeImage(largeImage);
     
   }
 
-  closeModal = () => {
-    this.setState({showModal: false});
+  const closeModal = () => {
+    setShowModal(false);
     
   }
-
-
-
-
-
-
-
-  render() {
-    const { showModal, largeImage } = this.state;
-    const { items } = this.props;
-
 
     return (
       <>
@@ -44,15 +32,14 @@ export class ImageGallery extends React.Component {
                 <ImageGalleryItem key={id} 
                   image={webformatURL} 
                   largeImage={largeImageURL}
-                  openModal={this.openModal}
+                  openModal={openModal}
                 ></ImageGalleryItem>))}
         </ul>
 
-        {showModal && <Modal closeModal={this.closeModal} largeImg={largeImage}></Modal>}
+        {showModal && <Modal closeModal={closeModal} largeImg={largeImage}></Modal>}
         
       </>
     );
-  }
   
 }
 
@@ -65,6 +52,9 @@ ImageGallery.propType = {
     }).isRequired,
   ).isRequired,
 }
+
+
+
 
 
 

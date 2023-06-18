@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import { FaSearch } from 'react-icons/fa';
 
 
-export class SearchBar extends React.Component {
+export function SearchBar({onSubmit}) {
 
 
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
     const searchName = event.currentTarget.elements.searchName.value;
     if(searchName.trim() === '') {
@@ -16,18 +16,17 @@ export class SearchBar extends React.Component {
       toast('Напиши що-небудь!');
     }
     else {
-      this.props.onSubmit(searchName);
+      onSubmit(searchName);
       event.currentTarget.reset();
     }
    
   };
 
 
-  render() {
     return (
       <header className={css.Searchbar}>
   
-        <form className={css.SearchForm} onSubmit={this.handleSubmit}>
+        <form className={css.SearchForm} onSubmit={handleSubmit}>
           <button type="submit" className={css.SearchFormButton}>
             <FaSearch className={css.Icon} ></FaSearch> 
           </button>
@@ -44,7 +43,8 @@ export class SearchBar extends React.Component {
   
       </header>
     );
-  }
   
 }
+
+
 

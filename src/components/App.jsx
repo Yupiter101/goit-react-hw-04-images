@@ -1,4 +1,4 @@
-import React from "react";
+import {useState, useEffect, useRef} from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // import { toast } from 'react-toastify';
@@ -11,35 +11,37 @@ import { perPage } from "services/pixabayApi";
 
 
 
-export class App extends React.Component {
+export function App() {
 
-  state = {
-    searchName: '',
-    images: [],
-    page: 1,
-    loading: false,
-    errorApi: false,  
-    isLoadMore: false,
-  };
+  const [searchName, setSearchName] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [errorApi, setErrorApi] = useState(false);
+  const [isLoadMore, setIsLoadMore] = useState(false);
 
 
-
-  componentDidUpdate(prevProps, prevState) {
-    const {searchName, page} = this.state;
-    if (searchName !== prevState.searchName || page !== prevState.page) {
-      this.getGaleryApi(searchName, page);
+  const isFirstRenderApp = useRef(true);
+  useEffect(()=> {
+    if(isFirstRenderApp.current) {
+      isFirstRenderApp.current = false;
+      console.log('Пропуск 1');
+      return
     }
-  }
+    if(!searchName) {
+      console.log('Пропуск 2');
+      return
+    }
+    getGaleryApi(searchName, page);
+  }, [searchName, page]);
 
 
-  handleSubmit = (searchName) => {
-    if(searchName !== this.state.searchName) {
-      this.setState({
-        searchName: searchName,
-        images: [],
-        page: 1,
-        isLoadMore: false,
-      });
+  function handleSubmit(search) {
+    if(search !== searchName) {
+      setSearchName(search);
+      setImages([]);
+      setPage(1);
+      setLoading(false);
     }
     else {
       console.log('То це вже ж було !!!!');
@@ -48,60 +50,48 @@ export class App extends React.Component {
   }
 
 
-  handleLoadMore = () => {
-    this.setState(prevState => ({page: prevState.page + 1 }));
-    // console.log('handleLoadMore');
-  }
+  const handleLoadMore = () => setPage(c => c + 1);
 
-
-  getGaleryApi = async (searchName, page) => {
-    this.setState({loading: true})
+  async function getGaleryApi(searchName, page) {
+    setLoading(true);
     try {
         const images = await getApi(searchName, page);
-        console.log('total', images.totalHits);
 
         if(!images.hits.length) {
             console.log("Sorry, there are no images matching your search query. Please try again.");
             toast('Sorry, there are no images');
             // Notify.warning('orry, there are no images matching your search query. Please try again.');
-            
             return
         }
 
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images.hits],
-          isLoadMore: this.state.page < Math.ceil(images.totalHits / perPage),
-        }));
+        setImages(c => ([...c, ...images.hits]));
+        setIsLoadMore(page < Math.ceil(images.totalHits / perPage));
     }
     catch(error) {
         console.error(error.message);
-        this.setState({ errorApi: true })
+        setErrorApi(true);
     }
     finally {
-      this.setState({loading: false})
+      setLoading(false);
     }
   }
  
 
 
-
-
-  render() {
-    const {loading, isLoadMore, errorApi} = this.state
-
     if(errorApi) {
-      return <h1 style={{marginLeft: '40%'}}>Ой! Щось трапилось :(</h1>
+      return <h1 style={{marginLeft: '40%'}}>Ой! Щось трапилось ...</h1>
     }
     
     return (
       <div>
-        <SearchBar onSubmit={this.handleSubmit}></SearchBar>
-        <ImageGallery items={this.state.images}></ImageGallery>
-        {isLoadMore && <LoadButton onLoadMore={this.handleLoadMore}></LoadButton>}
+        <SearchBar onSubmit={handleSubmit}></SearchBar>
+        <ImageGallery items={images}></ImageGallery>
+        {isLoadMore && <LoadButton onLoadMore={handleLoadMore}></LoadButton>}
         {loading && <Loader></Loader>}
         <ToastContainer autoClose={3000}></ToastContainer>
       </div>
     );
-  }
+
   
 };
+
